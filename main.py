@@ -7,9 +7,9 @@ from datetime import datetime
 from typing import List
 import os
 
-from .database import get_db, init_db, Request, RequestItem
-from .schemas import RequestCreate, RequestOut, ItemOut, ActionRequest, MessageResponse
-from .email_service import (
+from database import get_db, init_db, Request, RequestItem
+from schemas import RequestCreate, RequestOut, ItemOut, ActionRequest, MessageResponse
+from email_service import (
     notify_fscare_new_request,
     notify_hospital_status_update,
     notify_hospital_submission_confirmed,
