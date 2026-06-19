@@ -63,7 +63,7 @@ const UNITS = ['Tablets','Capsules','Vials','Bottles','Sachets','Boxes','Units',
 const HOSPS = ['General Hospital Lagos','Island General Hospital','Apapa Specialist Hospital','St. Nicholas Hospital','Lagos University Teaching Hospital'];
 
 let state = {
-  apiUrl: window.location.origin,  // auto-detects Railway URL
+  apiUrl: window.location.origin,
   apiStatus: 'checking',   // checking | ok | err
   mainView: 'hospital',    // hospital | admin
   hospTab: 'form',         // form | track
@@ -231,8 +231,8 @@ function buildApp() {
         </div>
       </div>
 
-      <!-- API bar -->
-      <div class="card" style="display:flex;align-items:center;gap:8px;padding:9px 14px;margin-bottom:10px">
+      <!-- API bar (hidden in production) -->
+      <div class="card" style="display:none;">
         <span class="dot ${dotCls}"></span>
         <input id="apiInput" value="${state.apiUrl}" placeholder="API URL"
           style="border:none;background:transparent;font-size:13px;flex:1;padding:0;box-shadow:none"/>
@@ -240,7 +240,7 @@ function buildApp() {
         <span style="font-size:11px;flex-shrink:0;color:${dotColor}">${dotLbl}</span>
       </div>
 
-      ${state.apiStatus === 'err' ? `
+      ${false ? `
       <div class="warn">
         ⚠ Can't reach the API. Start your FastAPI server:<br>
         <code>cd fscare-api &amp;&amp; uvicorn app.main:app --reload</code><br>
