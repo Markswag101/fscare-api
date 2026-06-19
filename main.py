@@ -1,13 +1,15 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import List
-import uuid
+import os
 
-from database import get_db, init_db, Request, RequestItem
-from schemas import RequestCreate, RequestOut, ItemOut, ActionRequest, MessageResponse
-from email_service import (
+from .database import get_db, init_db, Request, RequestItem
+from .schemas import RequestCreate, RequestOut, ItemOut, ActionRequest, MessageResponse
+from .email_service import (
     notify_fscare_new_request,
     notify_hospital_status_update,
     notify_hospital_submission_confirmed,
@@ -21,11 +23,16 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Lock down to your frontend domain in production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Serve the portal HTML from /static
+STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 @app.on_event("startup")
@@ -33,8 +40,16 @@ def on_startup():
     init_db()
 
 
+@app.get("/", include_in_schema=False)
+def serve_portal():
+    """Serve the FS Care portal at the root URL."""
+    index = os.path.join(STATIC_DIR, "index.html")
+    if os.path.exists(index):
+        return FileResponse(index)
+    return {"message": "FS Care API is running. Portal file not found."}
+
+
 def _generate_id(db: Session) -> str:
-    """Generate REQ-XXX style IDs."""
     count = db.query(Request).count()
     return f"REQ-{str(count + 1).zfill(3)}"
 
@@ -59,11 +74,9 @@ def _build_request_out(req: Request, db: Session) -> RequestOut:
 
 # ─── Hospital Routes ───────────────────────────────────────────────────────────
 
-@app.post("/requests", response_model=MessageResponse, status_code=status.HTTP_201_CREATED,
-          summary="Submit a new drug request")
+@app.post("/requests", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
 def submit_request(payload: RequestCreate, db: Session = Depends(get_db)):
     req_id = _generate_id(db)
-
     req = Request(
         id=req_id,
         hospital=payload.hospital,
@@ -76,7 +89,6 @@ def submit_request(payload: RequestCreate, db: Session = Depends(get_db)):
     )
     db.add(req)
     db.flush()
-
     for item in payload.items:
         db.add(RequestItem(
             request_id=req_id,
@@ -85,44 +97,24 @@ def submit_request(payload: RequestCreate, db: Session = Depends(get_db)):
             unit=item.unit,
             category=item.category,
         ))
-
     db.commit()
 
     items_list = [{"name": i.name, "qty": i.qty, "unit": i.unit, "category": i.category}
                   for i in payload.items]
-
-    # Email FS Care about the new request
-    notify_fscare_new_request(
-        req_id=req_id,
-        hospital=payload.hospital,
-        contact=payload.contact,
-        hospital_email=payload.email,
-        priority=payload.priority,
-        items=items_list,
-        notes=payload.notes or "",
-    )
-
-    # Confirmation email to the hospital
-    notify_hospital_submission_confirmed(
-        hospital_email=payload.email,
-        hospital=payload.hospital,
-        contact=payload.contact,
-        req_id=req_id,
-        items=items_list,
-    )
-
+    notify_fscare_new_request(req_id, payload.hospital, payload.contact,
+                               payload.email, payload.priority, items_list, payload.notes or "")
+    notify_hospital_submission_confirmed(payload.email, payload.hospital,
+                                          payload.contact, req_id, items_list)
     return MessageResponse(message="Request submitted successfully. FS Care has been notified.", request_id=req_id)
 
 
-@app.get("/requests/hospital/{email}", response_model=List[RequestOut],
-         summary="Get all requests for a hospital by email")
+@app.get("/requests/hospital/{email}", response_model=List[RequestOut])
 def get_hospital_requests(email: str, db: Session = Depends(get_db)):
     reqs = db.query(Request).filter(Request.email == email).order_by(Request.date_submitted.desc()).all()
     return [_build_request_out(r, db) for r in reqs]
 
 
-@app.get("/requests/{req_id}", response_model=RequestOut,
-         summary="Get a single request by ID")
+@app.get("/requests/{req_id}", response_model=RequestOut)
 def get_request(req_id: str, db: Session = Depends(get_db)):
     req = db.query(Request).filter(Request.id == req_id).first()
     if not req:
@@ -132,57 +124,37 @@ def get_request(req_id: str, db: Session = Depends(get_db)):
 
 # ─── Admin Routes ──────────────────────────────────────────────────────────────
 
-@app.get("/admin/requests", response_model=List[RequestOut],
-         summary="[Admin] Get all requests")
-def admin_get_all_requests(db: Session = Depends(get_db)):
+@app.get("/admin/requests", response_model=List[RequestOut])
+def admin_get_all(db: Session = Depends(get_db)):
     reqs = db.query(Request).order_by(Request.date_submitted.desc()).all()
     return [_build_request_out(r, db) for r in reqs]
 
 
-@app.patch("/admin/requests/{req_id}/action", response_model=MessageResponse,
-           summary="[Admin] Update status and add response note")
-def admin_action_request(req_id: str, payload: ActionRequest, db: Session = Depends(get_db)):
+@app.patch("/admin/requests/{req_id}/action", response_model=MessageResponse)
+def admin_action(req_id: str, payload: ActionRequest, db: Session = Depends(get_db)):
     req = db.query(Request).filter(Request.id == req_id).first()
     if not req:
         raise HTTPException(status_code=404, detail="Request not found")
-
     req.status = payload.status
     req.admin_note = payload.admin_note or ""
     req.date_actioned = datetime.utcnow()
     db.commit()
-
     items = db.query(RequestItem).filter(RequestItem.request_id == req_id).all()
     items_list = [{"name": i.name, "qty": i.qty, "unit": i.unit} for i in items]
-
-    # Email the hospital about the status change
-    notify_hospital_status_update(
-        hospital_email=req.email,
-        hospital=req.hospital,
-        contact=req.contact,
-        req_id=req_id,
-        new_status=payload.status,
-        admin_note=payload.admin_note or "",
-        items=items_list,
-    )
-
+    notify_hospital_status_update(req.email, req.hospital, req.contact,
+                                   req_id, payload.status, payload.admin_note or "", items_list)
     return MessageResponse(message=f"Request {req_id} updated to '{payload.status}'. Hospital notified.")
 
 
-@app.get("/admin/stats", summary="[Admin] Summary statistics")
+@app.get("/admin/stats")
 def admin_stats(db: Session = Depends(get_db)):
-    total = db.query(Request).count()
-    pending = db.query(Request).filter(Request.status == "pending").count()
-    processing = db.query(Request).filter(Request.status == "processing").count()
-    fulfilled = db.query(Request).filter(Request.status == "fulfilled").count()
-    cancelled = db.query(Request).filter(Request.status == "cancelled").count()
-    urgent = db.query(Request).filter(Request.priority == "urgent", Request.status == "pending").count()
     return {
-        "total": total,
-        "pending": pending,
-        "processing": processing,
-        "fulfilled": fulfilled,
-        "cancelled": cancelled,
-        "urgent_pending": urgent,
+        "total":          db.query(Request).count(),
+        "pending":        db.query(Request).filter(Request.status == "pending").count(),
+        "processing":     db.query(Request).filter(Request.status == "processing").count(),
+        "fulfilled":      db.query(Request).filter(Request.status == "fulfilled").count(),
+        "cancelled":      db.query(Request).filter(Request.status == "cancelled").count(),
+        "urgent_pending": db.query(Request).filter(Request.priority == "urgent", Request.status == "pending").count(),
     }
 
 
