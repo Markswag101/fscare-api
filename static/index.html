@@ -63,7 +63,7 @@ const UNITS = ['Tablets','Capsules','Vials','Bottles','Sachets','Boxes','Units',
 const HOSPS = ['General Hospital Lagos','Island General Hospital','Apapa Specialist Hospital','St. Nicholas Hospital','Lagos University Teaching Hospital'];
 
 let state = {
-  apiUrl: window.location.origin,
+  apiUrl: window.location.origin,  // auto-detects Railway URL
   apiStatus: 'checking',   // checking | ok | err
   mainView: 'hospital',    // hospital | admin
   hospTab: 'form',         // form | track

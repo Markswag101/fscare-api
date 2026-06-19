@@ -29,8 +29,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Serve the portal HTML from /static
-STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+# Serve portal from static/
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
@@ -42,7 +42,6 @@ def on_startup():
 
 @app.get("/", include_in_schema=False)
 def serve_portal():
-    """Serve the FS Care portal at the root URL."""
     index = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index):
         return FileResponse(index)
@@ -105,12 +104,16 @@ def submit_request(payload: RequestCreate, db: Session = Depends(get_db)):
                                payload.email, payload.priority, items_list, payload.notes or "")
     notify_hospital_submission_confirmed(payload.email, payload.hospital,
                                           payload.contact, req_id, items_list)
-    return MessageResponse(message="Request submitted successfully. FS Care has been notified.", request_id=req_id)
+    return MessageResponse(
+        message="Request submitted successfully. FS Care has been notified.",
+        request_id=req_id
+    )
 
 
 @app.get("/requests/hospital/{email}", response_model=List[RequestOut])
 def get_hospital_requests(email: str, db: Session = Depends(get_db)):
-    reqs = db.query(Request).filter(Request.email == email).order_by(Request.date_submitted.desc()).all()
+    reqs = db.query(Request).filter(Request.email == email)\
+             .order_by(Request.date_submitted.desc()).all()
     return [_build_request_out(r, db) for r in reqs]
 
 
@@ -154,7 +157,8 @@ def admin_stats(db: Session = Depends(get_db)):
         "processing":     db.query(Request).filter(Request.status == "processing").count(),
         "fulfilled":      db.query(Request).filter(Request.status == "fulfilled").count(),
         "cancelled":      db.query(Request).filter(Request.status == "cancelled").count(),
-        "urgent_pending": db.query(Request).filter(Request.priority == "urgent", Request.status == "pending").count(),
+        "urgent_pending": db.query(Request).filter(
+            Request.priority == "urgent", Request.status == "pending").count(),
     }
 
 
