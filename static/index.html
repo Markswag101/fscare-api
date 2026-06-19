@@ -87,7 +87,7 @@ let S = {
   userName: localStorage.getItem('fscare_name') || '',
   hospTab: 'form',       // form | track
   adminTab: 'requests',  // requests | hospitals | detail
-  form: blankForm(),
+  form: blankForm(localStorage.getItem('fscare_name') || ''),
   requests: [],
   allRequests: [],
   hospitals: [],
@@ -102,7 +102,7 @@ let S = {
   regForm: { name:'', email:'', phone:'', address:'', password:'', confirm:'' },
 };
 
-function blankForm(){ return {hospital:S.userName||'',contact:'',email:'',phone:'',priority:'normal',notes:'',items:[{name:'',qty:'',unit:'Tablets',category:'Antibiotics'}]}; }
+function blankForm(name){ return {hospital:name||'',contact:'',email:'',phone:'',priority:'normal',notes:'',items:[{name:'',qty:'',unit:'Tablets',category:'Antibiotics'}]}; }
 function blankItem(){ return {name:'',qty:'',unit:'Tablets',category:'Antibiotics'}; }
 
 // ── API ───────────────────────────────────────────────────────────────────────
@@ -129,7 +129,7 @@ async function doLogin(){
     localStorage.setItem('fscare_role', S.role);
     localStorage.setItem('fscare_name', S.userName);
     if(res.role === 'admin'){ setState({screen:'admin', busy:false}); loadAdmin(); }
-    else { setState({screen:'hospital', busy:false, form:blankForm()}); loadMyRequests(); }
+    else { setState({screen:'hospital', busy:false, form:blankForm(S.userName)}); loadMyRequests(); }
   } catch(e){ setState({busy:false, authError: e.message}); }
 }
 
@@ -163,7 +163,7 @@ async function submitRequest(){
   try{
     const res = await apiFetch('POST','/requests',{...f, items:f.items.map(it=>({...it,qty:parseInt(it.qty)}))});
     showToast(res.request_id + ' submitted! FS Care notified.');
-    setState({busy:false, form:blankForm(), hospTab:'track'});
+    setState({busy:false, form:blankForm(S.userName), hospTab:'track'});
     loadMyRequests();
   } catch(e){ showToast(e.message,'err'); setState({busy:false}); }
 }
@@ -340,7 +340,7 @@ function buildForm(){
     </div>`).join('')}
   </div>
   <div style="display:flex;justify-content:flex-end;gap:8px">
-    <button class="btn" onclick="S.form=blankForm();render()">Clear</button>
+    <button class="btn" onclick="S.form=blankForm(S.userName);render()">Clear</button>
     <button class="btn btn-primary" onclick="submitRequest()" ${S.busy?'disabled':''}>
       ${S.busy?'<span class="spinner"></span>Submitting…':'<i class="ti ti-send" style="font-size:13px"></i>Submit Request'}
     </button>
