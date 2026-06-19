@@ -8,21 +8,25 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--blue:#185FA5;--blue-dark:#0C447C;--blue-bg:#E6F1FB;--green:#3B6D11;--green-bg:#EAF3DE;--red:#A32D2D;--red-bg:#FCEBEB;--amber:#854F0B;--amber-bg:#FAEEDA;--border:#e0e2e8;--bg:#fff;--bg2:#f6f7f9;--text:#1a1a1a;--text2:#666;--text3:#999}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg2);color:var(--text);min-height:100vh;padding:24px 16px 60px}
-.shell{max-width:920px;margin:0 auto}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg2);color:var(--text);min-height:100vh}
+.shell{max-width:960px;margin:0 auto;padding:24px 16px 60px}
 .card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:12px}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--text);font-family:inherit;transition:all .15s}
 .btn:hover:not(:disabled){background:var(--bg2)}.btn:disabled{opacity:.5;cursor:not-allowed}
 .btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}.btn-primary:hover:not(:disabled){background:var(--blue-dark)}
-.btn-sm{padding:5px 11px;font-size:12px}
+.btn-success{background:var(--green);color:#fff;border-color:var(--green)}
 .btn-danger{color:var(--red);border-color:var(--red-bg)}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-full{width:100%;justify-content:center;padding:10px}
 input,select,textarea{width:100%;padding:9px 11px;font-size:14px;border:1px solid var(--border);border-radius:6px;background:#fff;color:var(--text);font-family:inherit;transition:border-color .15s,box-shadow .15s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.1)}
 label{font-size:12px;font-weight:500;color:var(--text2);display:block;margin-bottom:5px}
+.fgroup{margin-bottom:14px}
 .badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px}
 .b-pending{background:var(--amber-bg);color:var(--amber)}.b-processing{background:var(--blue-bg);color:var(--blue)}
 .b-fulfilled{background:var(--green-bg);color:var(--green)}.b-cancelled{background:var(--red-bg);color:var(--red)}
 .b-urgent{background:var(--red-bg);color:var(--red)}.b-normal{background:var(--bg2);color:var(--text2)}
+.b-approved{background:var(--green-bg);color:var(--green)}.b-unapproved{background:var(--amber-bg);color:var(--amber)}
 .tabs{display:flex;gap:4px;background:var(--bg2);border-radius:8px;padding:4px;width:fit-content;border:1px solid var(--border);margin-bottom:16px}
 .tab{padding:7px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text2);font-family:inherit;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
 .tab.on{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
@@ -37,292 +41,296 @@ tbody tr:hover td{background:var(--bg2)}
 .toast{position:fixed;bottom:24px;right:24px;padding:11px 18px;border-radius:8px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:9px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:si .25s ease}
 .t-ok{background:var(--green);color:#EAF3DE}.t-err{background:var(--red);color:#FCEBEB}
 @keyframes si{from{transform:translateX(50px);opacity:0}to{transform:translateX(0);opacity:1}}
-.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0;transition:background .3s}
-.dot-ok{background:var(--green)}.dot-err{background:var(--red)}.dot-spin{background:var(--amber);animation:pu 1s infinite}
-@keyframes pu{0%,100%{opacity:1}50%{opacity:.3}}
 .spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:ro .7s linear infinite}
 .spinner-dark{border-color:var(--border);border-top-color:var(--text2)}
 @keyframes ro{to{transform:rotate(360deg)}}
 .empty{text-align:center;padding:40px 20px;color:var(--text3)}
-.warn{background:var(--red-bg);color:var(--red);font-size:12px;padding:10px 14px;border-radius:6px;line-height:1.7;margin-bottom:12px}
 .info-box{background:var(--blue-bg);color:var(--blue);font-size:12px;padding:9px 12px;border-radius:6px;line-height:1.6;margin-top:8px}
+.warn-box{background:var(--red-bg);color:var(--red);font-size:12px;padding:9px 12px;border-radius:6px;margin-bottom:12px}
 .tag{display:inline-block;background:var(--bg2);border-radius:4px;padding:2px 8px;margin-right:6px;margin-bottom:4px;font-size:13px}
-.hidden{display:none}
-#app{display:block}
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
 .stat-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center}
+
+/* Auth screens */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg2);padding:20px}
+.auth-box{background:#fff;border:1px solid var(--border);border-radius:12px;padding:32px;width:100%;max-width:420px}
+.auth-logo{width:48px;height:48px;background:var(--blue);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.auth-title{font-size:20px;font-weight:700;text-align:center;margin-bottom:4px}
+.auth-sub{font-size:13px;color:var(--text2);text-align:center;margin-bottom:24px}
+.auth-switch{font-size:13px;color:var(--text2);text-align:center;margin-top:16px}
+.auth-switch a{color:var(--blue);cursor:pointer;text-decoration:none;font-weight:500}
+.auth-switch a:hover{text-decoration:underline}
+.err-msg{background:var(--red-bg);color:var(--red);font-size:12px;padding:9px 12px;border-radius:6px;margin-bottom:14px}
+.success-msg{background:var(--green-bg);color:var(--green);font-size:12px;padding:9px 12px;border-radius:6px;margin-bottom:14px}
+
+/* Nav */
+.topnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.navbrand{display:flex;align-items:center;gap:10px}
+.navlogo{width:36px;height:36px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.navuser{display:flex;align-items:center;gap:10px;font-size:13px}
+.navuser-name{font-weight:600}
+.navuser-role{font-size:11px;color:var(--text2)}
 </style>
 </head>
 <body>
-<div class="shell" id="app"></div>
-
+<div id="root"></div>
 <script>
-// ── State ─────────────────────────────────────────────────────────────────────
+const API = window.location.origin;
 const CATS = ['Antibiotics','Analgesics','Antihypertensives','Antidiabetics','Vitamins & Supplements','IV Fluids','Surgical Supplies','Diagnostic Kits','Vaccines','Other'];
 const UNITS = ['Tablets','Capsules','Vials','Bottles','Sachets','Boxes','Units','Packs'];
-const HOSPS = ['General Hospital Lagos','Island General Hospital','Apapa Specialist Hospital','St. Nicholas Hospital','Lagos University Teaching Hospital'];
 
-let state = {
-  apiUrl: window.location.origin,
-  apiStatus: 'checking',   // checking | ok | err
-  mainView: 'hospital',    // hospital | admin
-  hospTab: 'form',         // form | track
-  adminTab: 'list',        // list | detail
+// ── State ─────────────────────────────────────────────────────────────────────
+let S = {
+  screen: 'login',       // login | register | hospital | admin
+  token: localStorage.getItem('fscare_token') || '',
+  role: localStorage.getItem('fscare_role') || '',
+  userName: localStorage.getItem('fscare_name') || '',
+  hospTab: 'form',       // form | track
+  adminTab: 'requests',  // requests | hospitals | detail
   form: blankForm(),
-  trackEmail: '',
   requests: [],
   allRequests: [],
+  hospitals: [],
   stats: null,
   selectedReq: null,
   adminNote: '',
   adminStatus: 'pending',
   busy: false,
-  toastTimer: null,
+  authError: '',
+  authSuccess: '',
+  loginForm: { email:'', password:'' },
+  regForm: { name:'', email:'', phone:'', address:'', password:'', confirm:'' },
 };
 
-function blankForm() {
-  return { hospital:'', contact:'', email:'', phone:'', priority:'normal', notes:'', items:[blankItem()] };
-}
-function blankItem() {
-  return { name:'', qty:'', unit:'Tablets', category:'Antibiotics' };
-}
+function blankForm(){ return {hospital:S.userName||'',contact:'',email:'',phone:'',priority:'normal',notes:'',items:[{name:'',qty:'',unit:'Tablets',category:'Antibiotics'}]}; }
+function blankItem(){ return {name:'',qty:'',unit:'Tablets',category:'Antibiotics'}; }
 
 // ── API ───────────────────────────────────────────────────────────────────────
-async function apiFetch(method, path, body) {
-  const opts = { method, headers: { 'Content-Type': 'application/json' } };
-  if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(state.apiUrl + path, opts);
+async function apiFetch(method, path, body, auth=true){
+  const headers = {'Content-Type':'application/json'};
+  if(auth && S.token) headers['Authorization'] = 'Bearer ' + S.token;
+  const opts = {method, headers};
+  if(body) opts.body = JSON.stringify(body);
+  const res = await fetch(API + path, opts);
   const data = await res.json();
-  if (!res.ok) throw new Error(data.detail || 'API error');
+  if(!res.ok) throw new Error(data.detail || 'API error');
   return data;
 }
 
-async function pingHealth() {
-  setState({ apiStatus: 'checking' });
-  try { await apiFetch('GET', '/health'); setState({ apiStatus: 'ok' }); }
-  catch { setState({ apiStatus: 'err' }); }
+// ── Auth ──────────────────────────────────────────────────────────────────────
+async function doLogin(){
+  setState({busy:true, authError:''});
+  try{
+    const res = await apiFetch('POST','/auth/login', S.loginForm, false);
+    S.token = res.access_token;
+    S.role = res.role;
+    S.userName = res.name;
+    localStorage.setItem('fscare_token', S.token);
+    localStorage.setItem('fscare_role', S.role);
+    localStorage.setItem('fscare_name', S.userName);
+    if(res.role === 'admin'){ setState({screen:'admin', busy:false}); loadAdmin(); }
+    else { setState({screen:'hospital', busy:false, form:blankForm()}); loadMyRequests(); }
+  } catch(e){ setState({busy:false, authError: e.message}); }
 }
 
-async function submitRequest() {
-  const f = state.form;
-  // Validate email format
+async function doRegister(){
+  setState({busy:true, authError:'', authSuccess:''});
+  const f = S.regForm;
+  if(!f.name||!f.email||!f.password){ setState({busy:false, authError:'Name, email and password are required'}); return; }
+  if(f.password !== f.confirm){ setState({busy:false, authError:'Passwords do not match'}); return; }
+  if(f.password.length < 6){ setState({busy:false, authError:'Password must be at least 6 characters'}); return; }
+  try{
+    const res = await apiFetch('POST','/auth/register',{name:f.name,email:f.email,phone:f.phone,address:f.address,password:f.password}, false);
+    setState({busy:false, authSuccess: res.message, regForm:{name:'',email:'',phone:'',address:'',password:'',confirm:''}});
+  } catch(e){ setState({busy:false, authError: e.message}); }
+}
+
+function doLogout(){
+  S.token=''; S.role=''; S.userName='';
+  localStorage.removeItem('fscare_token');
+  localStorage.removeItem('fscare_role');
+  localStorage.removeItem('fscare_name');
+  setState({screen:'login', requests:[], allRequests:[], hospitals:[], stats:null, loginForm:{email:'',password:''}, authError:'', authSuccess:''});
+}
+
+// ── Hospital Actions ──────────────────────────────────────────────────────────
+async function submitRequest(){
+  const f = S.form;
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email);
-  if (!f.hospital || !f.contact || !f.email || !emailOk) {
-    showToast('Please fill in hospital, contact and a valid email', 'err'); return;
-  }
-  if (f.items.length === 0 || f.items.some(it => !it.name || !it.qty || parseInt(it.qty) < 1)) {
-    showToast('Please fill in all item names and quantities', 'err'); return;
-  }
-  setState({ busy: true });
-  try {
-    const payload = {
-      hospital: f.hospital.trim(),
-      contact:  f.contact.trim(),
-      email:    f.email.trim(),
-      phone:    (f.phone || '').trim(),
-      priority: f.priority || 'normal',
-      notes:    (f.notes || '').trim(),
-      items:    f.items.map(it => ({
-        name:     it.name.trim(),
-        qty:      parseInt(it.qty, 10),
-        unit:     it.unit || 'Tablets',
-        category: it.category || 'Other',
-      }))
-    };
-    const res = await apiFetch('POST', '/requests', payload);
-    showToast(res.request_id + ' submitted! FS Care notified by email.');
-    const savedEmail = f.email;
-    setState({ form: blankForm(), trackEmail: savedEmail, hospTab: 'track', busy: false });
-    loadHospRequests();
-  } catch(e) { showToast(e.message, 'err'); setState({ busy: false }); }
+  if(!f.hospital||!f.contact||!f.email||!emailOk){ showToast('Please fill hospital, contact and a valid email','err'); return; }
+  if(!f.items.length||f.items.some(it=>!it.name||!it.qty||parseInt(it.qty)<1)){ showToast('Fill in all item names and quantities','err'); return; }
+  setState({busy:true});
+  try{
+    const res = await apiFetch('POST','/requests',{...f, items:f.items.map(it=>({...it,qty:parseInt(it.qty)}))});
+    showToast(res.request_id + ' submitted! FS Care notified.');
+    setState({busy:false, form:blankForm(), hospTab:'track'});
+    loadMyRequests();
+  } catch(e){ showToast(e.message,'err'); setState({busy:false}); }
 }
 
-async function loadHospRequests() {
-  if (!state.trackEmail) { showToast('Enter your hospital email', 'err'); return; }
-  setState({ busy: true });
-  try {
-    const data = await apiFetch('GET', '/requests/hospital/' + encodeURIComponent(state.trackEmail));
-    setState({ requests: data, busy: false });
-    if (!data.length) showToast('No requests found for this email', 'err');
-  } catch(e) { showToast(e.message, 'err'); setState({ busy: false }); }
+async function loadMyRequests(){
+  setState({busy:true});
+  try{ const data = await apiFetch('GET','/requests/mine'); setState({requests:data, busy:false}); }
+  catch(e){ showToast(e.message,'err'); setState({busy:false}); }
 }
 
-async function loadAdmin() {
-  setState({ busy: true });
-  try {
-    const [reqs, stats] = await Promise.all([
-      apiFetch('GET', '/admin/requests'),
-      apiFetch('GET', '/admin/stats')
+// ── Admin Actions ─────────────────────────────────────────────────────────────
+async function loadAdmin(){
+  setState({busy:true});
+  try{
+    const [reqs, stats, hosps] = await Promise.all([
+      apiFetch('GET','/admin/requests'),
+      apiFetch('GET','/admin/stats'),
+      apiFetch('GET','/admin/hospitals'),
     ]);
-    setState({ allRequests: reqs, stats, busy: false });
-  } catch(e) { showToast(e.message, 'err'); setState({ busy: false }); }
+    setState({allRequests:reqs, stats, hospitals:hosps, busy:false});
+  } catch(e){ showToast(e.message,'err'); setState({busy:false}); }
 }
 
-async function actionRequest() {
-  setState({ busy: true });
-  try {
-    const id = state.selectedReq.id;
-    await apiFetch('PATCH', '/admin/requests/' + id + '/action', {
-      status: state.adminStatus, admin_note: state.adminNote
-    });
-    showToast('Request ' + id + ' updated. Hospital notified by email.');
-    setState({ adminTab: 'list', selectedReq: null, busy: false });
+async function actionRequest(){
+  setState({busy:true});
+  try{
+    const id = S.selectedReq.id;
+    await apiFetch('PATCH','/admin/requests/'+id+'/action',{status:S.adminStatus, admin_note:S.adminNote});
+    showToast('Request '+id+' updated. Hospital notified.');
+    setState({adminTab:'requests', selectedReq:null, busy:false});
     loadAdmin();
-  } catch(e) { showToast(e.message, 'err'); setState({ busy: false }); }
+  } catch(e){ showToast(e.message,'err'); setState({busy:false}); }
+}
+
+async function approveHospital(id){
+  try{
+    const res = await apiFetch('PATCH','/admin/hospitals/'+id+'/approve');
+    showToast(res.message); loadAdmin();
+  } catch(e){ showToast(e.message,'err'); }
+}
+
+async function rejectHospital(id, name){
+  if(!confirm('Reject and remove '+name+'?')) return;
+  try{
+    const res = await apiFetch('DELETE','/admin/hospitals/'+id);
+    showToast(res.message); loadAdmin();
+  } catch(e){ showToast(e.message,'err'); }
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function setState(patch) {
-  Object.assign(state, patch);
-  render();
-}
-
-function showToast(msg, type = 'ok') {
-  clearTimeout(state.toastTimer);
-  const el = document.getElementById('toast');
-  if (el) el.remove();
+function setState(patch){ Object.assign(S,patch); render(); }
+function showToast(msg, type='ok'){
+  const old = document.getElementById('toast'); if(old) old.remove();
   const t = document.createElement('div');
-  t.id = 'toast';
-  t.className = 'toast ' + (type === 'ok' ? 't-ok' : 't-err');
-  t.innerHTML = `<i class="ti ${type==='ok'?'ti-circle-check':'ti-alert-circle'}" style="font-size:16px"></i>${msg}`;
+  t.id='toast'; t.className='toast '+(type==='ok'?'t-ok':'t-err');
+  t.innerHTML=`<i class="ti ${type==='ok'?'ti-circle-check':'ti-alert-circle'}" style="font-size:16px"></i>${msg}`;
   document.body.appendChild(t);
-  state.toastTimer = setTimeout(() => t.remove(), 3500);
+  setTimeout(()=>t.remove(), 3500);
 }
-
-function fmtDate(d) {
-  if (!d) return '—';
-  return new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
-function sbadge(s) {
-  const cls = { pending:'b-pending', processing:'b-processing', fulfilled:'b-fulfilled', cancelled:'b-cancelled' };
-  const ico = { pending:'ti-clock', processing:'ti-refresh', fulfilled:'ti-circle-check', cancelled:'ti-x' };
-  return `<span class="badge ${cls[s]||'b-pending'}"><i class="ti ${ico[s]||'ti-clock'}" style="font-size:10px"></i>${cap(s)}</span>`;
-}
-function pbadge(p) {
-  return p === 'urgent'
-    ? `<span class="badge b-urgent"><i class="ti ti-alert-triangle" style="font-size:10px"></i>Urgent</span>`
-    : `<span class="badge b-normal">Normal</span>`;
-}
-function cap(s) { return s ? s[0].toUpperCase() + s.slice(1) : ''; }
+function fmtDate(d){ return d?new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—'; }
+function sbadge(s){ const cls={pending:'b-pending',processing:'b-processing',fulfilled:'b-fulfilled',cancelled:'b-cancelled'}; const ico={pending:'ti-clock',processing:'ti-refresh',fulfilled:'ti-circle-check',cancelled:'ti-x'}; return `<span class="badge ${cls[s]||'b-pending'}"><i class="ti ${ico[s]||'ti-clock'}" style="font-size:10px"></i>${cap(s)}</span>`; }
+function pbadge(p){ return p==='urgent'?`<span class="badge b-urgent"><i class="ti ti-alert-triangle" style="font-size:10px"></i>Urgent</span>`:`<span class="badge b-normal">Normal</span>`; }
+function cap(s){ return s?s[0].toUpperCase()+s.slice(1):''; }
+function addItem(){ S.form.items.push(blankItem()); render(); }
+function remItem(i){ S.form.items.splice(i,1); render(); }
+function updItem(i,k,v){ S.form.items[i][k]=v; }
+function updForm(k,v){ S.form[k]=v; }
+function updLogin(k,v){ S.loginForm[k]=v; }
+function updReg(k,v){ S.regForm[k]=v; }
+function selectReq(i){ const r=S.allRequests[i]; setState({selectedReq:r, adminNote:r.admin_note||'', adminStatus:r.status, adminTab:'detail'}); }
 
 // ── Render ────────────────────────────────────────────────────────────────────
-function render() {
-  document.getElementById('app').innerHTML = buildApp();
-  attachEvents();
+function render(){
+  const root = document.getElementById('root');
+  if(S.screen==='login'){ root.className=''; root.innerHTML=buildLogin(); }
+  else if(S.screen==='register'){ root.className=''; root.innerHTML=buildRegister(); }
+  else if(S.screen==='hospital'){ root.className='shell'; root.innerHTML=buildHospital(); }
+  else if(S.screen==='admin'){ root.className='shell'; root.innerHTML=buildAdmin(); }
 }
 
-function buildApp() {
-  const dotCls = state.apiStatus === 'ok' ? 'dot-ok' : state.apiStatus === 'err' ? 'dot-err' : 'dot-spin';
-  const dotLbl = state.apiStatus === 'ok' ? '● Live' : state.apiStatus === 'err' ? '● Offline' : 'Checking…';
-  const dotColor = state.apiStatus === 'ok' ? 'var(--green)' : state.apiStatus === 'err' ? 'var(--red)' : 'var(--text3)';
-
-  return `
-  <div>
-    <!-- Header -->
-    <div style="margin-bottom:20px">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
-        <div style="width:42px;height:42px;background:var(--blue);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <i class="ti ti-heart-rate-monitor" style="color:#fff;font-size:22px"></i>
-        </div>
-        <div>
-          <div style="font-weight:700;font-size:17px">FS Care — Drug Request Portal</div>
-          <div style="font-size:12px;color:var(--text2)">First Sterling Pharmacy</div>
-        </div>
-      </div>
-
-      <!-- API bar (hidden in production) -->
-      <div class="card" style="display:none;">
-        <span class="dot ${dotCls}"></span>
-        <input id="apiInput" value="${state.apiUrl}" placeholder="API URL"
-          style="border:none;background:transparent;font-size:13px;flex:1;padding:0;box-shadow:none"/>
-        <button class="btn btn-sm" onclick="connectApi()">Connect</button>
-        <span style="font-size:11px;flex-shrink:0;color:${dotColor}">${dotLbl}</span>
-      </div>
-
-      ${false ? `
-      <div class="warn">
-        ⚠ Can't reach the API. Start your FastAPI server:<br>
-        <code>cd fscare-api &amp;&amp; uvicorn app.main:app --reload</code><br>
-        Then click Connect. Once deployed on Railway, paste your Railway URL above.
-      </div>` : ''}
-
-      <!-- Main tabs -->
-      <div class="tabs">
-        <button class="tab ${state.mainView==='hospital'?'on':''}" onclick="setView('hospital')">
-          <i class="ti ti-building-hospital" style="font-size:14px"></i>Hospital Portal
-        </button>
-        <button class="tab ${state.mainView==='admin'?'on':''}" onclick="setView('admin')">
-          <i class="ti ti-shield-check" style="font-size:14px"></i>FS Care Admin
-        </button>
-      </div>
-    </div>
-
-    ${state.mainView === 'hospital' ? buildHospital() : buildAdmin()}
-  </div>`;
-}
-
-// ── Hospital ──────────────────────────────────────────────────────────────────
-function buildHospital() {
-  return `
-  <div class="tabs">
-    <button class="tab ${state.hospTab==='form'?'on':''}" onclick="setHospTab('form')">
-      <i class="ti ti-plus" style="font-size:13px"></i>New Request
-    </button>
-    <button class="tab ${state.hospTab==='track'?'on':''}" onclick="setHospTab('track')">
-      <i class="ti ti-list-check" style="font-size:13px"></i>Track Requests
-    </button>
+// ── Login ─────────────────────────────────────────────────────────────────────
+function buildLogin(){
+  return `<div class="auth-wrap"><div class="auth-box">
+  <div class="auth-logo"><i class="ti ti-heart-rate-monitor" style="color:#fff;font-size:24px"></i></div>
+  <div class="auth-title">FS Care Portal</div>
+  <div class="auth-sub">First Sterling Pharmacy — Drug Request System</div>
+  ${S.authError?`<div class="err-msg"><i class="ti ti-alert-circle"></i> ${S.authError}</div>`:''}
+  <div class="fgroup"><label>Email address</label><input type="email" placeholder="email@hospital.ng" value="${S.loginForm.email}" oninput="updLogin('email',this.value)" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+  <div class="fgroup"><label>Password</label><input type="password" placeholder="••••••••" value="${S.loginForm.password}" oninput="updLogin('password',this.value)" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+  <button class="btn btn-primary btn-full" onclick="doLogin()" ${S.busy?'disabled':''}>
+    ${S.busy?'<span class="spinner"></span>Signing in…':'<i class="ti ti-login" style="font-size:14px"></i>Sign In'}
+  </button>
+  <div class="auth-switch">New hospital? <a onclick="setState({screen:'register',authError:'',authSuccess:''})">Register here</a></div>
+  <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);text-align:center">
+    FS Care Admin? Use your admin credentials above.
   </div>
-  ${state.hospTab === 'form' ? buildForm() : buildTrack()}`;
+</div></div>`;
 }
 
-function buildForm() {
-  const f = state.form;
+// ── Register ──────────────────────────────────────────────────────────────────
+function buildRegister(){
+  const f = S.regForm;
+  return `<div class="auth-wrap"><div class="auth-box" style="max-width:480px">
+  <div class="auth-logo"><i class="ti ti-building-hospital" style="color:#fff;font-size:24px"></i></div>
+  <div class="auth-title">Register Hospital</div>
+  <div class="auth-sub">Create an account to submit drug requests to FS Care</div>
+  ${S.authError?`<div class="err-msg"><i class="ti ti-alert-circle"></i> ${S.authError}</div>`:''}
+  ${S.authSuccess?`<div class="success-msg"><i class="ti ti-circle-check"></i> ${S.authSuccess}<br><br><a onclick="setState({screen:'login',authError:'',authSuccess:''})" style="color:var(--blue);cursor:pointer;font-weight:500">Back to login →</a></div>`:''}
+  ${!S.authSuccess?`
+  <div class="grid2">
+    <div class="fgroup"><label>Hospital name *</label><input placeholder="e.g. Island General Hospital" value="${f.name}" oninput="updReg('name',this.value)"/></div>
+    <div class="fgroup"><label>Email address *</label><input type="email" placeholder="email@hospital.ng" value="${f.email}" oninput="updReg('email',this.value)"/></div>
+    <div class="fgroup"><label>Phone number</label><input placeholder="080XXXXXXXX" value="${f.phone}" oninput="updReg('phone',this.value)"/></div>
+    <div class="fgroup"><label>Address</label><input placeholder="Hospital address" value="${f.address}" oninput="updReg('address',this.value)"/></div>
+    <div class="fgroup"><label>Password *</label><input type="password" placeholder="Min 6 characters" value="${f.password}" oninput="updReg('password',this.value)"/></div>
+    <div class="fgroup"><label>Confirm password *</label><input type="password" placeholder="Repeat password" value="${f.confirm}" oninput="updReg('confirm',this.value)"/></div>
+  </div>
+  <button class="btn btn-primary btn-full" onclick="doRegister()" ${S.busy?'disabled':''}>
+    ${S.busy?'<span class="spinner"></span>Submitting…':'<i class="ti ti-user-plus" style="font-size:14px"></i>Register Hospital'}
+  </button>
+  <div class="auth-switch">Already have an account? <a onclick="setState({screen:'login',authError:'',authSuccess:''})">Sign in</a></div>
+  `:''}
+</div></div>`;
+}
+
+// ── Hospital Portal ───────────────────────────────────────────────────────────
+function buildHospital(){
+  return `
+  <div class="topnav">
+    <div class="navbrand">
+      <div class="navlogo"><i class="ti ti-heart-rate-monitor" style="color:#fff;font-size:18px"></i></div>
+      <div><div style="font-weight:700;font-size:15px">FS Care Portal</div><div style="font-size:11px;color:var(--text2)">Drug Request System</div></div>
+    </div>
+    <div class="navuser">
+      <div><div class="navuser-name">${S.userName}</div><div class="navuser-role">Hospital Account</div></div>
+      <button class="btn btn-sm" onclick="doLogout()"><i class="ti ti-logout" style="font-size:13px"></i>Logout</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab ${S.hospTab==='form'?'on':''}" onclick="setState({hospTab:'form'})"><i class="ti ti-plus" style="font-size:13px"></i>New Request</button>
+    <button class="tab ${S.hospTab==='track'?'on':''}" onclick="loadMyRequests();setState({hospTab:'track'})"><i class="ti ti-list-check" style="font-size:13px"></i>My Requests</button>
+  </div>
+  ${S.hospTab==='form' ? buildForm() : buildTrack()}`;
+}
+
+function buildForm(){
+  const f = S.form;
   return `
   <div class="card">
-    <div style="font-weight:600;font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
-      <i class="ti ti-building-hospital" style="color:var(--blue)"></i>Hospital Details
-    </div>
+    <div style="font-weight:600;font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px"><i class="ti ti-building-hospital" style="color:var(--blue)"></i>Hospital Details</div>
     <div class="grid2" style="margin-bottom:12px">
-      <div>
-        <label>Hospital name *</label>
-        <input id="f_hospital" list="hlist" placeholder="Select or type" value="${f.hospital}" oninput="updForm('hospital',this.value)"/>
-        <datalist id="hlist">${HOSPS.map(h=>`<option value="${h}"/>`).join('')}</datalist>
-      </div>
-      <div>
-        <label>Contact person *</label>
-        <input id="f_contact" placeholder="Dr. / Pharmacist name" value="${f.contact}" oninput="updForm('contact',this.value)"/>
-      </div>
-      <div>
-        <label>Email address *</label>
-        <input id="f_email" type="email" placeholder="email@hospital.ng" value="${f.email}" oninput="updForm('email',this.value)"/>
-      </div>
-      <div>
-        <label>Phone</label>
-        <input id="f_phone" placeholder="080XXXXXXXX" value="${f.phone}" oninput="updForm('phone',this.value)"/>
-      </div>
+      <div class="fgroup"><label>Hospital name *</label><input value="${f.hospital}" oninput="updForm('hospital',this.value)" placeholder="Your hospital name"/></div>
+      <div class="fgroup"><label>Contact person *</label><input value="${f.contact}" oninput="updForm('contact',this.value)" placeholder="Dr. / Pharmacist name"/></div>
+      <div class="fgroup"><label>Email address *</label><input type="email" value="${f.email}" oninput="updForm('email',this.value)" placeholder="email@hospital.ng"/></div>
+      <div class="fgroup"><label>Phone</label><input value="${f.phone}" oninput="updForm('phone',this.value)" placeholder="080XXXXXXXX"/></div>
     </div>
     <div class="grid2">
-      <div>
-        <label>Priority</label>
-        <select onchange="updForm('priority',this.value)">
-          <option value="normal" ${f.priority==='normal'?'selected':''}>Normal</option>
-          <option value="urgent" ${f.priority==='urgent'?'selected':''}>Urgent</option>
-        </select>
-      </div>
-      <div>
-        <label>Notes</label>
-        <input placeholder="Special instructions..." value="${f.notes}" oninput="updForm('notes',this.value)"/>
-      </div>
+      <div class="fgroup"><label>Priority</label><select onchange="updForm('priority',this.value)"><option value="normal" ${f.priority==='normal'?'selected':''}>Normal</option><option value="urgent" ${f.priority==='urgent'?'selected':''}>Urgent</option></select></div>
+      <div class="fgroup"><label>Notes</label><input value="${f.notes}" oninput="updForm('notes',this.value)" placeholder="Special instructions..."/></div>
     </div>
   </div>
-
   <div class="card">
     <div style="font-weight:600;font-size:14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
       <span style="display:flex;align-items:center;gap:8px"><i class="ti ti-pill" style="color:var(--blue)"></i>Items Requested</span>
       <button class="btn btn-sm" onclick="addItem()"><i class="ti ti-plus" style="font-size:12px"></i>Add item</button>
     </div>
-    ${f.items.map((it, i) => `
+    ${f.items.map((it,i)=>`
     <div class="grid5">
       <div>${i===0?'<label>Drug / Item name *</label>':''}<input placeholder="e.g. Amoxicillin 500mg" value="${it.name}" oninput="updItem(${i},'name',this.value)"/></div>
       <div>${i===0?'<label>Qty *</label>':''}<input type="number" min="1" placeholder="100" value="${it.qty}" oninput="updItem(${i},'qty',this.value)"/></div>
@@ -331,208 +339,169 @@ function buildForm() {
       <div style="padding-top:${i===0?19:0}px">${f.items.length>1?`<button class="btn btn-danger" style="padding:8px 9px" onclick="remItem(${i})"><i class="ti ti-trash" style="font-size:13px"></i></button>`:''}</div>
     </div>`).join('')}
   </div>
-
   <div style="display:flex;justify-content:flex-end;gap:8px">
-    <button class="btn" onclick="clearForm()">Clear</button>
-    <button class="btn btn-primary" onclick="submitRequest()" ${state.busy||state.apiStatus!=='ok'?'disabled':''}>
-      ${state.busy ? '<span class="spinner"></span>Submitting…' : '<i class="ti ti-send" style="font-size:13px"></i>Submit Request'}
+    <button class="btn" onclick="S.form=blankForm();render()">Clear</button>
+    <button class="btn btn-primary" onclick="submitRequest()" ${S.busy?'disabled':''}>
+      ${S.busy?'<span class="spinner"></span>Submitting…':'<i class="ti ti-send" style="font-size:13px"></i>Submit Request'}
     </button>
   </div>`;
 }
 
-function buildTrack() {
+function buildTrack(){
   return `
-  <div class="card" style="display:flex;gap:8px;align-items:flex-end">
-    <div style="flex:1">
-      <label>Hospital email — to load your requests</label>
-      <input type="email" placeholder="email@hospital.ng" value="${state.trackEmail}"
-        oninput="state.trackEmail=this.value"
-        onkeydown="if(event.key==='Enter')loadHospRequests()"/>
-    </div>
-    <button class="btn btn-primary" onclick="loadHospRequests()" ${state.busy?'disabled':''}>
-      ${state.busy?'<span class="spinner"></span>Loading…':'<i class="ti ti-search" style="font-size:13px"></i>Load'}
-    </button>
-  </div>
-
-  ${state.requests.length === 0 ? `
-  <div class="empty">
-    <i class="ti ti-inbox" style="font-size:40px;display:block;margin-bottom:10px"></i>
-    Enter your email above and click Load
-  </div>` : state.requests.map(r => `
+  ${S.busy?`<div class="empty"><div class="spinner spinner-dark" style="width:24px;height:24px;margin:0 auto 10px"></div>Loading…</div>`:''}
+  ${!S.busy && S.requests.length===0?`<div class="empty"><i class="ti ti-inbox" style="font-size:40px;display:block;margin-bottom:10px"></i>No requests yet. Submit your first request.</div>`:''}
+  ${S.requests.map(r=>`
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
       <div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
-          <span style="font-weight:700;font-size:14px">${r.id}</span>
-          ${sbadge(r.status)} ${pbadge(r.priority)}
+          <span style="font-weight:700;font-size:14px">${r.id}</span>${sbadge(r.status)} ${pbadge(r.priority)}
         </div>
         <div style="font-size:13px;color:var(--text2)">${r.hospital} · ${r.contact}</div>
       </div>
       <div style="font-size:12px;color:var(--text3)">${fmtDate(r.date_submitted)}</div>
     </div>
     <div>${r.items.map(it=>`<span class="tag">${it.qty} ${it.unit} ${it.name}</span>`).join('')}</div>
-    ${r.admin_note ? `<div class="info-box"><i class="ti ti-info-circle" style="font-size:12px;margin-right:4px"></i><strong>FS Care: </strong>${r.admin_note}</div>` : ''}
+    ${r.admin_note?`<div class="info-box"><i class="ti ti-info-circle" style="font-size:12px;margin-right:4px"></i><strong>FS Care: </strong>${r.admin_note}</div>`:''}
   </div>`).join('')}`;
 }
 
-// ── Admin ─────────────────────────────────────────────────────────────────────
-function buildAdmin() {
-  if (state.adminTab === 'detail' && state.selectedReq) return buildDetail();
-
-  const s = state.stats;
+// ── Admin Portal ──────────────────────────────────────────────────────────────
+function buildAdmin(){
+  const pendingHosps = (S.hospitals||[]).filter(h=>!h.approved).length;
   return `
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-    <span style="font-weight:700;font-size:15px">All Requests</span>
-    <button class="btn" onclick="loadAdmin()" ${state.busy?'disabled':''} style="font-size:13px">
-      ${state.busy?'<span class="spinner spinner-dark"></span>Loading…':'<i class="ti ti-refresh" style="font-size:14px"></i>Refresh'}
+  <div class="topnav">
+    <div class="navbrand">
+      <div class="navlogo"><i class="ti ti-heart-rate-monitor" style="color:#fff;font-size:18px"></i></div>
+      <div><div style="font-weight:700;font-size:15px">FS Care Admin</div><div style="font-size:11px;color:var(--text2)">First Sterling Pharmacy</div></div>
+    </div>
+    <div class="navuser">
+      <div><div class="navuser-name">${S.userName}</div><div class="navuser-role">Administrator</div></div>
+      <button class="btn btn-sm" onclick="doLogout()"><i class="ti ti-logout" style="font-size:13px"></i>Logout</button>
+    </div>
+  </div>
+
+  ${S.adminTab==='detail' && S.selectedReq ? buildDetail() : `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <div class="tabs" style="margin-bottom:0">
+      <button class="tab ${S.adminTab==='requests'?'on':''}" onclick="setState({adminTab:'requests'})"><i class="ti ti-list" style="font-size:13px"></i>Requests</button>
+      <button class="tab ${S.adminTab==='hospitals'?'on':''}" onclick="setState({adminTab:'hospitals'})">
+        <i class="ti ti-building-hospital" style="font-size:13px"></i>Hospitals
+        ${pendingHosps>0?`<span style="background:var(--red);color:#fff;border-radius:100px;font-size:10px;padding:1px 6px;font-weight:700">${pendingHosps}</span>`:''}
+      </button>
+    </div>
+    <button class="btn btn-sm" onclick="loadAdmin()" ${S.busy?'disabled':''}>
+      ${S.busy?'<span class="spinner spinner-dark"></span>':'<i class="ti ti-refresh" style="font-size:13px"></i>'}Refresh
     </button>
   </div>
 
-  ${s ? `
+  ${S.stats?`
   <div class="stat-grid">
-    ${[['Pending',s.pending,'var(--amber)'],['Processing',s.processing,'var(--blue)'],['Fulfilled',s.fulfilled,'var(--green)'],['Urgent',s.urgent_pending,'var(--red)']].map(([l,v,c])=>`
+    ${[['Pending',S.stats.pending,'var(--amber)'],['Processing',S.stats.processing,'var(--blue)'],['Fulfilled',S.stats.fulfilled,'var(--green)'],['Urgent',S.stats.urgent_pending,'var(--red)']].map(([l,v,c])=>`
     <div class="stat-card">
       <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">${l}</div>
       <div style="font-size:28px;font-weight:700;color:${c}">${v}</div>
     </div>`).join('')}
-  </div>` : ''}
+  </div>`:''}
 
-  ${state.allRequests.length === 0 ? `
-  <div class="empty">
-    <i class="ti ti-inbox" style="font-size:40px;display:block;margin-bottom:10px"></i>
-    ${state.apiStatus === 'ok' ? 'No requests yet' : 'Connect to the API to load requests'}
-  </div>` : `
-  <div class="card" style="padding:0;overflow:hidden">
-    <table>
-      <thead><tr>
-        <th>ID</th><th>Hospital</th><th>Date</th><th>Items</th><th>Priority</th><th>Status</th><th></th>
-      </tr></thead>
-      <tbody>
-        ${state.allRequests.map((r,i) => `
-        <tr>
-          <td style="font-weight:700;font-size:13px">${r.id}</td>
-          <td style="font-size:13px"><div>${r.hospital}</div><div style="font-size:11px;color:var(--text2)">${r.contact}</div></td>
-          <td style="font-size:12px;color:var(--text2)">${fmtDate(r.date_submitted)}</td>
-          <td style="font-size:13px">${r.items.length} item${r.items.length!==1?'s':''}</td>
-          <td>${pbadge(r.priority)}</td>
-          <td>${sbadge(r.status)}</td>
-          <td><button class="btn btn-sm" onclick="selectReq(${i})"><i class="ti ti-eye" style="font-size:13px"></i>Review</button></td>
-        </tr>`).join('')}
-      </tbody>
-    </table>
-  </div>`}`;
+  ${S.adminTab==='requests' ? buildAdminRequests() : buildAdminHospitals()}
+  `}`;
 }
 
-function buildDetail() {
-  const r = state.selectedReq;
-  return `
-  <button class="btn" style="margin-bottom:16px" onclick="backToList()">
-    <i class="ti ti-arrow-left" style="font-size:14px"></i>Back to list
-  </button>
+function buildAdminRequests(){
+  if(!S.allRequests.length) return `<div class="empty"><i class="ti ti-inbox" style="font-size:40px;display:block;margin-bottom:10px"></i>No requests yet</div>`;
+  return `<div class="card" style="padding:0;overflow:hidden">
+  <table>
+    <thead><tr><th>ID</th><th>Hospital</th><th>Date</th><th>Items</th><th>Priority</th><th>Status</th><th></th></tr></thead>
+    <tbody>${S.allRequests.map((r,i)=>`
+    <tr>
+      <td style="font-weight:700;font-size:13px">${r.id}</td>
+      <td style="font-size:13px"><div>${r.hospital}</div><div style="font-size:11px;color:var(--text2)">${r.contact}</div></td>
+      <td style="font-size:12px;color:var(--text2)">${fmtDate(r.date_submitted)}</td>
+      <td>${r.items.length} item${r.items.length!==1?'s':''}</td>
+      <td>${pbadge(r.priority)}</td>
+      <td>${sbadge(r.status)}</td>
+      <td><button class="btn btn-sm" onclick="selectReq(${i})"><i class="ti ti-eye" style="font-size:13px"></i>Review</button></td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
 
+function buildAdminHospitals(){
+  if(!S.hospitals.length) return `<div class="empty"><i class="ti ti-building-hospital" style="font-size:40px;display:block;margin-bottom:10px"></i>No hospitals registered yet</div>`;
+  return `<div class="card" style="padding:0;overflow:hidden">
+  <table>
+    <thead><tr><th>Hospital</th><th>Email</th><th>Phone</th><th>Registered</th><th>Status</th><th></th></tr></thead>
+    <tbody>${S.hospitals.map(h=>`
+    <tr>
+      <td style="font-weight:600;font-size:13px">${h.name}</td>
+      <td style="font-size:13px;color:var(--blue)">${h.email}</td>
+      <td style="font-size:13px">${h.phone||'—'}</td>
+      <td style="font-size:12px;color:var(--text2)">${fmtDate(h.date_registered)}</td>
+      <td>${h.approved?'<span class="badge b-approved"><i class="ti ti-circle-check" style="font-size:10px"></i>Approved</span>':'<span class="badge b-unapproved"><i class="ti ti-clock" style="font-size:10px"></i>Pending</span>'}</td>
+      <td style="display:flex;gap:6px;padding:8px 12px">
+        ${!h.approved?`<button class="btn btn-success btn-sm" onclick="approveHospital('${h.id}')"><i class="ti ti-check" style="font-size:12px"></i>Approve</button>`:''}
+        <button class="btn btn-danger btn-sm" onclick="rejectHospital('${h.id}','${h.name}')"><i class="ti ti-trash" style="font-size:12px"></i>${h.approved?'Remove':'Reject'}</button>
+      </td>
+    </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+function buildDetail(){
+  const r = S.selectedReq;
+  return `
+  <button class="btn" style="margin-bottom:16px" onclick="setState({adminTab:'requests',selectedReq:null})">
+    <i class="ti ti-arrow-left" style="font-size:14px"></i>Back to requests
+  </button>
   <div class="card">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-      <div>
-        <div style="font-weight:700;font-size:17px;margin-bottom:4px">${r.id}</div>
-        <div style="font-size:13px;color:var(--text2)">${fmtDate(r.date_submitted)}</div>
-      </div>
+      <div><div style="font-weight:700;font-size:17px;margin-bottom:4px">${r.id}</div><div style="font-size:13px;color:var(--text2)">${fmtDate(r.date_submitted)}</div></div>
       ${sbadge(r.status)}
     </div>
     <div class="hr"></div>
     <div class="grid2" style="font-size:13px;gap:14px">
       ${[['Hospital',r.hospital,true],['Contact',r.contact,true],['Email',r.email,false],['Phone',r.phone||'—',false]].map(([l,v,b])=>`
-      <div>
-        <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px">${l}</div>
-        <div style="font-weight:${b?600:400};color:${l==='Email'?'var(--blue)':'inherit'}">${v}</div>
-      </div>`).join('')}
+      <div><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px">${l}</div>
+      <div style="font-weight:${b?600:400};color:${l==='Email'?'var(--blue)':'inherit'}">${v}</div></div>`).join('')}
     </div>
-    ${r.notes ? `<div style="margin-top:14px;font-size:13px;background:var(--bg2);padding:9px 12px;border-radius:6px"><span style="color:var(--text2)">Notes: </span>${r.notes}</div>` : ''}
+    ${r.notes?`<div style="margin-top:14px;font-size:13px;background:var(--bg2);padding:9px 12px;border-radius:6px"><span style="color:var(--text2)">Notes: </span>${r.notes}</div>`:''}
   </div>
-
   <div class="card">
-    <div style="font-weight:600;font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
-      <i class="ti ti-pill" style="color:var(--blue)"></i>Requested Items
-    </div>
+    <div style="font-weight:600;font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px"><i class="ti ti-pill" style="color:var(--blue)"></i>Requested Items</div>
     <table style="font-size:13px">
       <thead><tr><th>#</th><th>Item</th><th>Category</th><th>Qty</th><th>Unit</th></tr></thead>
-      <tbody>
-        ${r.items.map((it,i)=>`
-        <tr>
-          <td style="color:var(--text2)">${i+1}</td>
-          <td style="font-weight:500">${it.name}</td>
-          <td>${it.category}</td>
-          <td>${it.qty}</td>
-          <td>${it.unit}</td>
-        </tr>`).join('')}
-      </tbody>
+      <tbody>${r.items.map((it,i)=>`<tr><td style="color:var(--text2)">${i+1}</td><td style="font-weight:500">${it.name}</td><td>${it.category}</td><td>${it.qty}</td><td>${it.unit}</td></tr>`).join('')}</tbody>
     </table>
   </div>
-
   <div class="card">
-    <div style="font-weight:600;font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
-      <i class="ti ti-pencil" style="color:var(--blue)"></i>Action This Request
-    </div>
-    <div style="margin-bottom:12px">
-      <label>Update status</label>
-      <select onchange="state.adminStatus=this.value">
-        ${['pending','processing','fulfilled','cancelled'].map(s=>`<option value="${s}" ${state.adminStatus===s?'selected':''}>${cap(s)}</option>`).join('')}
+    <div style="font-weight:600;font-size:14px;margin-bottom:14px;display:flex;align-items:center;gap:8px"><i class="ti ti-pencil" style="color:var(--blue)"></i>Action This Request</div>
+    <div style="margin-bottom:12px"><label>Update status</label>
+      <select onchange="S.adminStatus=this.value">
+        ${['pending','processing','fulfilled','cancelled'].map(s=>`<option value="${s}" ${S.adminStatus===s?'selected':''}>${cap(s)}</option>`).join('')}
       </select>
     </div>
-    <div style="margin-bottom:16px">
-      <label>Response note to hospital</label>
-      <textarea rows="3" placeholder="e.g. Items dispatched via courier. ETA 2 working days." oninput="state.adminNote=this.value" style="resize:vertical">${state.adminNote}</textarea>
+    <div style="margin-bottom:16px"><label>Response note to hospital</label>
+      <textarea rows="3" placeholder="e.g. Items dispatched via courier. ETA 2 working days." oninput="S.adminNote=this.value" style="resize:vertical">${S.adminNote}</textarea>
     </div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button class="btn" onclick="backToList()">Cancel</button>
-      <button class="btn btn-primary" onclick="actionRequest()" ${state.busy?'disabled':''}>
-        ${state.busy?'<span class="spinner"></span>Saving…':'<i class="ti ti-check" style="font-size:13px"></i>Save &amp; Notify Hospital'}
+      <button class="btn" onclick="setState({adminTab:'requests',selectedReq:null})">Cancel</button>
+      <button class="btn btn-primary" onclick="actionRequest()" ${S.busy?'disabled':''}>
+        ${S.busy?'<span class="spinner"></span>Saving…':'<i class="ti ti-check" style="font-size:13px"></i>Save & Notify Hospital'}
       </button>
     </div>
   </div>`;
 }
 
-// ── Event handlers (global) ───────────────────────────────────────────────────
-function attachEvents() {
-  // API input live update
-  const inp = document.getElementById('apiInput');
-  if (inp) inp.addEventListener('input', e => { state.apiUrl = e.target.value.replace(/\/$/, ''); });
-}
-
-function connectApi() {
-  const inp = document.getElementById('apiInput');
-  if (inp) state.apiUrl = inp.value.replace(/\/$/, '');
-  pingHealth();
-}
-
-function setView(v) {
-  state.mainView = v;
-  if (v === 'admin') loadAdmin();
-  else render();
-}
-function setHospTab(t) { setState({ hospTab: t }); }
-
-function updForm(k, v) { state.form[k] = v; }
-function clearForm() { setState({ form: blankForm() }); }
-
-function addItem() {
-  state.form.items.push(blankItem());
-  render();
-}
-function remItem(i) {
-  state.form.items.splice(i, 1);
-  render();
-}
-function updItem(i, k, v) { state.form.items[i][k] = v; }
-
-function selectReq(i) {
-  const r = state.allRequests[i];
-  setState({ selectedReq: r, adminNote: r.admin_note || '', adminStatus: r.status, adminTab: 'detail' });
-}
-function backToList() { setState({ adminTab: 'list', selectedReq: null }); }
-
 // ── Boot ──────────────────────────────────────────────────────────────────────
-render();
-pingHealth();
+// Auto-restore session
+if(S.token && S.role){
+  if(S.role==='admin'){ S.screen='admin'; render(); loadAdmin(); }
+  else { S.screen='hospital'; render(); loadMyRequests(); }
+} else {
+  render();
+}
 </script>
 </body>
 </html>
