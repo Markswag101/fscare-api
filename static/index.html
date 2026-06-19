@@ -411,42 +411,39 @@ function buildAdmin(){
 
 function buildAdminRequests(){
   if(!S.allRequests.length) return `<div class="empty"><i class="ti ti-inbox" style="font-size:40px;display:block;margin-bottom:10px"></i>No requests yet</div>`;
-  return `<div class="card" style="padding:0;overflow:hidden">
-  <table>
-    <thead><tr><th>ID</th><th>Hospital</th><th>Date</th><th>Items</th><th>Priority</th><th>Status</th><th></th></tr></thead>
-    <tbody>${S.allRequests.map((r,i)=>`
-    <tr>
-      <td style="font-weight:700;font-size:13px">${r.id}</td>
-      <td style="font-size:13px"><div>${r.hospital}</div><div style="font-size:11px;color:var(--text2)">${r.contact}</div></td>
-      <td style="font-size:12px;color:var(--text2)">${fmtDate(r.date_submitted)}</td>
-      <td>${r.items.length} item${r.items.length!==1?'s':''}</td>
-      <td>${pbadge(r.priority)}</td>
-      <td>${sbadge(r.status)}</td>
-      <td><button class="btn btn-sm" onclick="selectReq(${i})"><i class="ti ti-eye" style="font-size:13px"></i>Review</button></td>
-    </tr>`).join('')}
-    </tbody>
-  </table></div>`;
+  return S.allRequests.map((r,i)=>`
+  <div class="card" style="margin-bottom:10px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px">
+          <span style="font-weight:700;font-size:14px">${r.id}</span>${sbadge(r.status)}${pbadge(r.priority)}
+        </div>
+        <div style="font-size:13px;font-weight:500">${r.hospital}</div>
+        <div style="font-size:12px;color:var(--text2)">${r.contact} · ${fmtDate(r.date_submitted)}</div>
+      </div>
+    </div>
+    <div style="margin-bottom:10px">${r.items.map(it=>`<span class="tag">${it.qty} ${it.unit} ${it.name}</span>`).join('')}</div>
+    <button class="btn btn-sm" onclick="selectReq(${i})" style="width:100%;justify-content:center"><i class="ti ti-eye" style="font-size:13px"></i>Review Request</button>
+  </div>`).join('');
 }
 
 function buildAdminHospitals(){
   if(!S.hospitals.length) return `<div class="empty"><i class="ti ti-building-hospital" style="font-size:40px;display:block;margin-bottom:10px"></i>No hospitals registered yet</div>`;
-  return `<div class="card" style="padding:0;overflow:hidden">
-  <table>
-    <thead><tr><th>Hospital</th><th>Email</th><th>Phone</th><th>Registered</th><th>Status</th><th></th></tr></thead>
-    <tbody>${S.hospitals.map(h=>`
-    <tr>
-      <td style="font-weight:600;font-size:13px">${h.name}</td>
-      <td style="font-size:13px;color:var(--blue)">${h.email}</td>
-      <td style="font-size:13px">${h.phone||'—'}</td>
-      <td style="font-size:12px;color:var(--text2)">${fmtDate(h.date_registered)}</td>
-      <td>${h.approved?'<span class="badge b-approved"><i class="ti ti-circle-check" style="font-size:10px"></i>Approved</span>':'<span class="badge b-unapproved"><i class="ti ti-clock" style="font-size:10px"></i>Pending</span>'}</td>
-      <td style="display:flex;gap:6px;padding:8px 12px">
-        ${!h.approved?`<button class="btn btn-success btn-sm" onclick="approveHospital('${h.id}')"><i class="ti ti-check" style="font-size:12px"></i>Approve</button>`:''}
-        <button class="btn btn-danger btn-sm" onclick="rejectHospital('${h.id}','${h.name}')"><i class="ti ti-trash" style="font-size:12px"></i>${h.approved?'Remove':'Reject'}</button>
-      </td>
-    </tr>`).join('')}
-    </tbody>
-  </table></div>`;
+  return S.hospitals.map(h=>`
+  <div class="card" style="margin-bottom:10px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+      <div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:3px">${h.name}</div>
+        <div style="font-size:13px;color:var(--blue);margin-bottom:2px">${h.email}</div>
+        <div style="font-size:12px;color:var(--text2)">${h.phone||'—'} · Registered ${fmtDate(h.date_registered)}</div>
+      </div>
+      ${h.approved?'<span class="badge b-approved"><i class="ti ti-circle-check" style="font-size:10px"></i>Approved</span>':'<span class="badge b-unapproved"><i class="ti ti-clock" style="font-size:10px"></i>Pending</span>'}
+    </div>
+    <div style="display:flex;gap:8px">
+      ${!h.approved?`<button class="btn btn-success" style="flex:1;justify-content:center" onclick="approveHospital('${h.id}')"><i class="ti ti-check" style="font-size:13px"></i>Approve</button>`:''}
+      <button class="btn btn-danger" style="flex:1;justify-content:center" onclick="rejectHospital('${h.id}','${h.name}')"><i class="ti ti-trash" style="font-size:13px"></i>${h.approved?'Remove':'Reject'}</button>
+    </div>
+  </div>`).join('');
 }
 
 function buildDetail(){
